@@ -1,4 +1,4 @@
-const searchGithub = async () => {
+const searchGithub = async (search: string) => {
   try {
     const start = Math.floor(Math.random() * 100000000) + 1;
     // console.log(import.meta.env);
@@ -10,6 +10,7 @@ const searchGithub = async () => {
         },
       }
     );
+    console.log('import.meta.env.VITE_GITHUB_TOKEN', import.meta.env);
     // console.log('Response:', response);
     const data = await response.json();
     if (!response.ok) {
