@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { searchGithub, searchGithubUser } from '../api/API';
-import { Button, Card, CardBody, CardHeader, CardTitle } from '../components/ui';
-import Input from '../components/ui/Input/Input';
+import { Button, Card, CardBody, CardTitle} from '../components/ui';
 import { Candidate } from '../interfaces/Candidate.interface';
 
 interface GithubUser extends Candidate {
@@ -9,63 +8,110 @@ interface GithubUser extends Candidate {
   login: string;
   avatar_url: string;
   html_url: string;
-  score: number;
+  name: string;
+  location: string;
+  email: string;
+  company: string;
+  bio: string;
 }
 
-const CandidateSearch = () => {
-  const [search, setSearch] = useState('');
-  const [results, setResults] = useState<GithubUser[]>([]);
+const CandidateSearch: React.FC = () => {
+  const [candidate, setCandidate] = useState<GithubUser | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userList, setUserList] = useState<GithubUser[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const fetchUserList = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await searchGithub('');
+      setUserList(data);
+      if (data.length > 0) {
+        fetchUserDetails(data[0].login);
+      }
+    } catch (err) {
+      setError('Error fetching user list from GitHub');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserDetails = async (username: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await searchGithubUser(username);
+      setCandidate(data);
+    } catch (err) {
+      setError('Error fetching user details from GitHub');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-        if (search) {
-            setLoading(true);
-            setError(null);
-            try {
-                const data = await searchGithub(search);
-                setResults(data);
-            } catch (err) {
-                setError('Error fetching data from GitHub');
-            } finally {
-                setLoading(false);
-            }
-        }
-    };
+    fetchUserList();
+  }, []);
 
-    fetchData();
-  }, [search]);
+  const handleNextCandidate = () => {
+    const nextIndex = (currentIndex + 1) % userList.length;
+    setCurrentIndex(nextIndex);
+    fetchUserDetails(userList[nextIndex].login);
+  };
 
-    const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-    };
+  const handleApprove = () => {
+    if (candidate) {
+      const savedCandidates = JSON.parse(localStorage.getItem('savedCandidates') || '[]');
+      const updatedCandidates = [...savedCandidates, {
+        id: candidate.id,
+        image: candidate.avatar_url,
+        name: candidate.login,
+        location: candidate.location, 
+        email: candidate.email,
+        company: candidate.company,
+        bio: candidate.bio,
 
-    const handleSearchClick = () => {
-        searchGithubUser(search);
-    };
-    
+      }];
+      localStorage.setItem('savedCandidates', JSON.stringify(updatedCandidates));
+    }
+    handleNextCandidate();
+  };
+
+  const handleReject = () => {
+    handleNextCandidate();
+  };
+
+  if (loading && !candidate) {
+    return <div>Loading candidate...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <>
-      <h1>CandidateSearch</h1>
-      <div>
-        <Input type="text" onChange={handleSearchInput} placeholder="Enter Github Username" />
-        <Button onClick={handleSearchClick} disabled={loading}>{loading ? 'Searching...' : 'Search'}</Button>
-      </div>
-      {error && <p>{error}</p>}
-      <div>
-        {results.map((result) => (
-          <Card key={result.id}>
-            <CardHeader>
-              <CardTitle>{result.login}</CardTitle>
-            </CardHeader>
-            <CardBody>
-              <img src={result.avatar_url} alt={result.login} />
-              <p>Score: {result.score}</p>
-              <a href={result.html_url}>View Profile</a>
-            </CardBody>
-          </Card>
-        ))}
+      <h1>Candidate Search</h1>
+      {candidate && (
+        <Card>
+          <CardBody>
+            <img 
+              src={candidate.avatar_url} 
+              alt={`${candidate.login}'s avatar`} 
+            />
+            <CardTitle><strong>{candidate.login.charAt(0).toUpperCase() + candidate.login.slice(1)}({candidate.login})</strong></CardTitle>
+            <p>Location:{candidate.location || 'Not specified'}</p>
+            <p>Email: {candidate.email || 'Not specified'}</p>
+            <p>Company: {candidate.company || 'Not specified'}</p>
+            <p>Bio: {candidate.bio || 'Not specified'}</p>
+          </CardBody>
+        </Card>
+      )}
+      <div style={{display: 'flex', justifyContent: 'space-between', alignContent:'flex-start'}}>
+        <Button onClick={handleReject} className="rejected">-</Button>
+        <Button onClick={handleApprove} className="approved">+ </Button>
       </div>
     </>
   );

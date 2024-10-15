@@ -1,14 +1,16 @@
 .card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
+    width: 300px;
+    margin: 0 auto;
+    background-color: #121213c0;
+    border: 1px solid #f70d0d;
+    border-radius: 20px;
     margin-bottom: 1rem;
   }
   
   .card-header {
-    background-color: #f8f8f8;
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
+    background-color: #121213c0;
+    padding: 0.5rem;
+    margin-left: 0.5rem;
   }
   
   .card-title {
@@ -17,9 +19,26 @@
   }
   
   .card-content {
+    margin: auto;
+
+  }
+
+  .card-body {
     padding: 1rem;
+    background-color: rgb(36, 35, 35);
   }
   
+  .card img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .card p {
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    color: #fff;
+  }
   .button {
     background-color: #007bff;
     color: white;
@@ -46,4 +65,22 @@
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  }
+
+  .approved {
+    display: flex;
+    background-color: green;
+    color: black;
+    font-size: 2.5rem;
+    border-radius: 49% ;
+
+  }
+
+  .rejected {
+    display: flex;
+    background-color: red;
+    color: black;
+    font-size: 2.5rem;
+    border-radius: 49% ;
+    margin-right: 12rem;
   }

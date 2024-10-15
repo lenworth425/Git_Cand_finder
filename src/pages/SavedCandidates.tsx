@@ -1,21 +1,36 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, CardBody, CardHeader, CardTitle } from '../components/ui/index';
+import { Button } from '../components/ui/index';
+import { Candidate } from '../interfaces/Candidate.interface';
 
-interface Candidate {
+interface Candidates extends Candidate {
   id: number;
   login: string;
   avatar_url: string;
   html_url: string;
-  score: number;
+  name: string;
+  location: string;
+  email: string;
+  company: string;
+  bio: string;
 }
 
-const SavedCandidates = () => {
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+const SavedCandidates: React.FC = () => {
+  const [candidates, setCandidates] = useState<Candidates[]>([]);
 
   useEffect(() => {
-    const savedCandidates = JSON.parse(localStorage.getItem('savedCandidates') || '[]');
-      setCandidates((savedCandidates));
-    }, []);
+    const loadCandidates = () => {
+      const savedCandidates= JSON.parse(localStorage.getItem('savedCandidates') || '[]');
+      setCandidates(savedCandidates);
+    }
+    loadCandidates();
+    window.addEventListener('storage', loadCandidates);
+    return () => {
+      window.removeEventListener('storage', loadCandidates);
+    };
+    
+    }, []);      
+    console.log('candidate', candidates);
+
     const removeCandidate = (id:number) => {
       const updatedCandidates = candidates.filter(candidate => candidate.id !== id);
       setCandidates(updatedCandidates);
@@ -28,21 +43,36 @@ const SavedCandidates = () => {
         <p>No saved candidates yet.</p>
       ) : (
         <div>
-          {candidates.map((candidate) => (
-            <Card key={candidate.id}>
-              <CardHeader>
-                <CardTitle>{candidate.login}</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <img src={candidate.avatar_url} alt={candidate.login} />
-                <p>Score: {candidate.score}</p>
-                <div>
-                  <a href={candidate.html_url}>View Profile</a>           
-                  <Button onClick={() => removeCandidate(candidate.id)}>Remove</Button>
-                </div>
-              </CardBody>
-            </Card>
-          ))}
+          <table className='table'>
+            <thead>
+              <tr>
+                <th>image</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Email</th>
+                <th>Company</th>
+                <th>Bio</th>
+                <th>Reject</th>
+              </tr>
+            </thead>
+            <tbody style={{textAlign: 'center'}}>
+              {candidates.map((candidate) => (
+                <tr key={candidate.id}>
+                <td>
+                  <img src={candidate.avatar_url} style={{ width: '120px', height: '120px' }} />
+                </td>
+                <td>{candidate.name}</td>
+                <td>{candidate.location}</td>
+                <td>{candidate.email}</td>
+                <td>{candidate.company}</td>
+                <td>{candidate.bio}</td>
+                <td key={`${candidate.id}-action`}>
+                  <Button onClick={() => removeCandidate(candidate.id)}>Reject</Button>
+                </td>
+              </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </>

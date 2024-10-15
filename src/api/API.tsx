@@ -10,7 +10,6 @@ const searchGithub = async (search: string) => {
         },
       }
     );
-    console.log('import.meta.env.VITE_GITHUB_TOKEN', import.meta.env);
     // console.log('Response:', response);
     const data = await response.json();
     if (!response.ok) {
