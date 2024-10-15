@@ -66,7 +66,7 @@ const CandidateSearch: React.FC = () => {
       const savedCandidates = JSON.parse(localStorage.getItem('savedCandidates') || '[]');
       const updatedCandidates = [...savedCandidates, {
         id: candidate.id,
-        image: candidate.avatar_url,
+        avatar_url: candidate.avatar_url,
         name: candidate.login,
         location: candidate.location, 
         email: candidate.email,

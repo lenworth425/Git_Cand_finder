@@ -84,3 +84,10 @@
     border-radius: 49% ;
     margin-right: 12rem;
   }
+
+  .small {
+    background-color: red;
+    color: black;
+    font-size: 0.8rem;
+    border-radius: 49% ;
+  }

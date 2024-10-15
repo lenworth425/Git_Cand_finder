@@ -29,7 +29,7 @@ const SavedCandidates: React.FC = () => {
     };
     
     }, []);      
-    console.log('candidate', candidates);
+    // console.log('candidate avatar url', candidate.avatar_url);
 
     const removeCandidate = (id:number) => {
       const updatedCandidates = candidates.filter(candidate => candidate.id !== id);
@@ -55,19 +55,20 @@ const SavedCandidates: React.FC = () => {
                 <th>Reject</th>
               </tr>
             </thead>
-            <tbody style={{textAlign: 'center'}}>
+            <tbody>
               {candidates.map((candidate) => (
                 <tr key={candidate.id}>
-                <td>
-                  <img src={candidate.avatar_url} style={{ width: '120px', height: '120px' }} />
+                <td style={{textAlign: 'center'}}>
+                  <img src={candidate.avatar_url} style={{ width: '100px', height: '100px' }} alt={candidate.name}
+                  />
                 </td>
-                <td>{candidate.name}</td>
-                <td>{candidate.location}</td>
-                <td>{candidate.email}</td>
-                <td>{candidate.company}</td>
-                <td>{candidate.bio}</td>
-                <td key={`${candidate.id}-action`}>
-                  <Button onClick={() => removeCandidate(candidate.id)}>Reject</Button>
+                <td style={{textAlign: 'center'}}>{candidate.name}</td>
+                <td style={{textAlign: 'center'}}>{candidate.location}</td>
+                <td style={{textAlign: 'center'}}>{candidate.email}</td>
+                <td style={{textAlign: 'center'}}>{candidate.company}</td>
+                <td style={{textAlign: 'center'}}>{candidate.bio}</td>
+                <td style={{textAlign: 'center'}} key={`${candidate.id}-action`}>
+                  <Button style={{textAlign: 'center'}} onClick={() => removeCandidate(candidate.id)} className='small'>x</Button>
                 </td>
               </tr>
               ))}
